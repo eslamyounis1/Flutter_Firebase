@@ -1,7 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../shared/firebase_auth.dart';
@@ -61,19 +58,23 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Container(
         padding: const EdgeInsets.all(36.0),
         child: ListView(
-          physics: const NeverScrollableScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           children: [
-            Form(
-              key: formKey,
-              child: Column(
-                children: [
-                  userInput(),
-                  passwordInput(),
-                  btnMain(),
-                  btnSecondary(),
-                  txtMessage(),
-                ],
-              ),
+            Column(
+              children: [
+                userInput(),
+                passwordInput(),
+                btnMain(),
+                btnSecondary(),
+                const SizedBox(
+                  height: 60.0,
+                ),
+                btnGoogle(),
+                const SizedBox(
+                  height: 15.0,
+                ),
+                txtMessage(),
+              ],
             ),
           ],
         ),
@@ -83,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget userInput() => Padding(
         padding: const EdgeInsetsDirectional.only(
-          top: 128,
+          top: 24,
         ),
         child: TextFormField(
           controller: txtUserName,
@@ -111,21 +112,21 @@ class _LoginScreenState extends State<LoginScreen> {
           controller: txtPassword,
           keyboardType: TextInputType.visiblePassword,
           obscureText: obscurePassword,
-          decoration:  InputDecoration(
+          decoration: InputDecoration(
             hintText: 'password',
             icon: const Icon(
               Icons.enhanced_encryption,
             ),
             suffixIcon: IconButton(
-              onPressed: (){
+              onPressed: () {
                 setState(() {
                   isPasswordShown = !isPasswordShown;
                   obscurePassword = !obscurePassword;
                 });
               },
-             icon: Icon(
-            isPasswordShown ? Icons.visibility : Icons.visibility_off,
-             ),
+              icon: Icon(
+                isPasswordShown ? Icons.visibility : Icons.visibility_off,
+              ),
             ),
           ),
           validator: (value) {
@@ -141,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget btnMain() {
     String btnText = isLogin ? 'Log in' : 'Sign up';
     return Padding(
-      padding: const EdgeInsetsDirectional.only(top: 10),
+      padding: const EdgeInsetsDirectional.only(top: 40.0),
       child: Container(
         height: 60.0,
         child: ElevatedButton(
@@ -221,6 +222,39 @@ class _LoginScreenState extends State<LoginScreen> {
           fontSize: 16,
           color: Theme.of(context).primaryColorDark,
           fontWeight: FontWeight.bold,
+        ),
+      );
+
+  Widget btnGoogle() => InkWell(
+    onTap: (){
+      auth.loginWithGoogle().then((value){
+        if (value == null){
+          setState(() {
+            message = 'Google Login Error';
+          });
+        }else{
+          setState(() {
+            message = '$value successfully logged in with Google';
+          });
+        }
+      });
+    },
+        child: Container(
+          width: 100.0,
+          height: 70.0,
+          decoration:  BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                offset: const Offset(0.0, 1.0),
+                blurRadius: 30.0,
+                spreadRadius: 0.0,
+              ),
+            ]
+          ),
+          child: Image.asset(
+            'assets/images/google.png',
+          ),
         ),
       );
 }

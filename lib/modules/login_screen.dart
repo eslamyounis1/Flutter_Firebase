@@ -16,6 +16,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   String message = '';
   bool isLogin = true;
+  bool isPasswordShown = false;
+  bool obscurePassword = true;
   var txtUserName = TextEditingController();
   var txtPassword = TextEditingController();
   var formKey = GlobalKey<FormState>();
@@ -41,14 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
           IconButton(
             onPressed: () {
               auth.logout().then((value) {
-                if (value){
+                if (value) {
                   setState(() {
                     message = 'User Logged Out';
                   });
-                }else{
+                } else {
                   message = 'Unable to log out';
                 }
-
               });
             },
             icon: const Icon(
@@ -60,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Container(
         padding: const EdgeInsets.all(36.0),
         child: ListView(
+          physics: const NeverScrollableScrollPhysics(),
           children: [
             Form(
               key: formKey,
@@ -73,7 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
             ),
-
           ],
         ),
       ),
@@ -109,10 +110,22 @@ class _LoginScreenState extends State<LoginScreen> {
         child: TextFormField(
           controller: txtPassword,
           keyboardType: TextInputType.visiblePassword,
-          decoration: const InputDecoration(
+          obscureText: obscurePassword,
+          decoration:  InputDecoration(
             hintText: 'password',
-            icon: Icon(
+            icon: const Icon(
               Icons.enhanced_encryption,
+            ),
+            suffixIcon: IconButton(
+              onPressed: (){
+                setState(() {
+                  isPasswordShown = !isPasswordShown;
+                  obscurePassword = !obscurePassword;
+                });
+              },
+             icon: Icon(
+            isPasswordShown ? Icons.visibility : Icons.visibility_off,
+             ),
             ),
           ),
           validator: (value) {
@@ -128,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget btnMain() {
     String btnText = isLogin ? 'Log in' : 'Sign up';
     return Padding(
-      padding: const EdgeInsetsDirectional.only(top: 128),
+      padding: const EdgeInsetsDirectional.only(top: 10),
       child: Container(
         height: 60.0,
         child: ElevatedButton(
@@ -147,36 +160,34 @@ class _LoginScreenState extends State<LoginScreen> {
           onPressed: () {
             var userId = '';
             // if(formKey.currentState!.validate()){
-              if (isLogin) {
-                auth.login(txtUserName.text, txtPassword.text).then((value) {
-                  if (value == null) {
-                    setState(() {
-                      message = 'login Error';
-                    });
-                  } else {
-                    userId = value;
-                    setState(() {
-                      message = 'user $userId successfully logged in';
-                    });
-                  }
-                });
-              } else{
-                auth.createUser(txtUserName.text, txtPassword.text).then((value){
-                  if (value == null){
-                    setState(() {
-                      message = 'Registration Error';
-                    });
-
-                  } else{
-                    userId = value;
-                    setState(() {
-                      message = 'user $userId successfully signed in';
-                    });
-                  }
-                });
-              }
+            if (isLogin) {
+              auth.login(txtUserName.text, txtPassword.text).then((value) {
+                if (value == null) {
+                  setState(() {
+                    message = 'login Error';
+                  });
+                } else {
+                  userId = value;
+                  setState(() {
+                    message = 'user $userId successfully logged in';
+                  });
+                }
+              });
+            } else {
+              auth.createUser(txtUserName.text, txtPassword.text).then((value) {
+                if (value == null) {
+                  setState(() {
+                    message = 'Registration Error';
+                  });
+                } else {
+                  userId = value;
+                  setState(() {
+                    message = 'user $userId successfully Registered';
+                  });
+                }
+              });
+            }
             // }
-
           },
           child: Text(
             btnText,

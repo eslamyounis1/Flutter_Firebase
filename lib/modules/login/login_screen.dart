@@ -1,7 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_flutter_cook_book/modules/happy/happy_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../shared/firebase_auth.dart';
+import '../../shared/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -172,6 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   setState(() {
                     message = 'user $userId successfully logged in';
                   });
+                  changeScreen();
                 }
               });
             } else {
@@ -226,35 +228,41 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
   Widget btnGoogle() => InkWell(
-    onTap: (){
-      auth.loginWithGoogle().then((value){
-        if (value == null){
-          setState(() {
-            message = 'Google Login Error';
+        onTap: () {
+          auth.loginWithGoogle().then((value) {
+            if (value == null) {
+              setState(() {
+                message = 'Google Login Error';
+              });
+            } else {
+              setState(() {
+                message = '$value successfully logged in with Google';
+              });
+              changeScreen();
+            }
           });
-        }else{
-          setState(() {
-            message = '$value successfully logged in with Google';
-          });
-        }
-      });
-    },
+        },
         child: Container(
           width: 100.0,
           height: 70.0,
-          decoration:  BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.25),
-                offset: const Offset(0.0, 1.0),
-                blurRadius: 30.0,
-                spreadRadius: 0.0,
-              ),
-            ]
-          ),
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25),
+              offset: const Offset(0.0, 1.0),
+              blurRadius: 30.0,
+              spreadRadius: 0.0,
+            ),
+          ]),
           child: Image.asset(
             'assets/images/google.png',
           ),
         ),
       );
+
+  void changeScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HappyScreen()),
+    );
+  }
 }

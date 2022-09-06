@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_flutter_cook_book/modules/happy/happy_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../../poll.dart';
 import '../../shared/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -274,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void changeScreen() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const HappyScreen()),
+      MaterialPageRoute(builder: (context) => const PollScreen()),
     );
   }
 }

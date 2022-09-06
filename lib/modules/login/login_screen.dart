@@ -61,21 +61,24 @@ class _LoginScreenState extends State<LoginScreen> {
         child: ListView(
           physics: const BouncingScrollPhysics(),
           children: [
-            Column(
-              children: [
-                userInput(),
-                passwordInput(),
-                btnMain(),
-                btnSecondary(),
-                const SizedBox(
-                  height: 60.0,
-                ),
-                btnGoogle(),
-                const SizedBox(
-                  height: 15.0,
-                ),
-                txtMessage(),
-              ],
+            Form(
+              key: formKey,
+              child: Column(
+                children: [
+                  userInput(),
+                  passwordInput(),
+                  btnMain(),
+                  btnSecondary(),
+                  const SizedBox(
+                    height: 60.0,
+                  ),
+                  btnGoogle(),
+                  const SizedBox(
+                    height: 15.0,
+                  ),
+                  txtMessage(),
+                ],
+              ),
             ),
           ],
         ),
@@ -97,8 +100,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           validator: (value) {
-            if (value == null) {
+            if (value!.isEmpty) {
               return 'User Name is required';
+            }
+            final regex = RegExp('[^@]+@[^\.]+\..+');
+            if (!regex.hasMatch(value)){
+              return 'Enter a valid email';
             }
             return null;
           },
@@ -131,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           validator: (value) {
-            if (value == null) {
+            if (value!.isEmpty) {
               return 'Password is required';
             } else {
               return '';
@@ -161,36 +168,41 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           onPressed: () {
             var userId = '';
-            // if(formKey.currentState!.validate()){
-            if (isLogin) {
-              auth.login(txtUserName.text, txtPassword.text).then((value) {
-                if (value == null) {
-                  setState(() {
-                    message = 'login Error';
-                  });
-                } else {
-                  userId = value;
-                  setState(() {
-                    message = 'user $userId successfully logged in';
-                  });
-                  changeScreen();
-                }
-              });
-            } else {
-              auth.createUser(txtUserName.text, txtPassword.text).then((value) {
-                if (value == null) {
-                  setState(() {
-                    message = 'Registration Error';
-                  });
-                } else {
-                  userId = value;
-                  setState(() {
-                    message = 'user $userId successfully Registered';
-                  });
-                }
-              });
+            if(formKey.currentState!.validate()){
+              return;
             }
-            // }
+            setState(() {
+              if (isLogin) {
+                auth.login(txtUserName.text, txtPassword.text).then((value) {
+                  if (value == null) {
+                    setState(() {
+                      message = 'login Error';
+                    });
+                  } else {
+                    userId = value;
+                    setState(() {
+                      message = 'user $userId successfully logged in';
+                    });
+                    changeScreen();
+                  }
+                });
+              } else {
+                auth.createUser(txtUserName.text, txtPassword.text).then((value) {
+                  if (value == null) {
+                    setState(() {
+                      message = 'Registration Error';
+                    });
+                  } else {
+                    userId = value;
+                    setState(() {
+                      message = 'user $userId successfully Registered';
+                    });
+                  }
+                });
+              }
+            });
+
+
           },
           child: Text(
             btnText,
